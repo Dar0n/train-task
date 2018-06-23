@@ -11,3 +11,7 @@ A test problem solving task to simulate movement of the trains along railways.
 other moved on
 
 ![Scheme of the railways network](scheme.png)
+
+## Getting Started
+
+To test the app, clone or download the repository and run index.html file in web browser of your choice.
