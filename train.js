@@ -1,150 +1,163 @@
 'use strict';
 
-let MakeGraph = () => { 
-  let graph = {};
-  graph.contains = (node)=> {
-    return !!graph[node.number];
-  }
-  graph.addStation = (node) => {  
-    if(!graph.contains(node)){
-      graph[node.number] = node;
-    }
-  }
-  graph.addConnection = (startNode, endNode) => {
-    if(graph.contains(startNode) && graph.contains(endNode)){
-      graph[startNode.number].connects[endNode.number] = true;
-      graph[endNode.number].connects[startNode.number] = true;
-    }
-  }
-  return graph;
-}
-
-let railways = MakeGraph();
 // Station needs index number, position on canvas and direction
 // Direction is needed to calculate position for the next Station
 function Station(number, position) {
   this.number = number;
   this.position = position;
-  this.connects = {};
+  this.next = null;
+  this.prev = null;
+  // this.connects = {};
 }
 
 let counter = 1;
 let line1 = [1, 2, 3, 4, 5];
 let line2 = [6, 7, 2, 8, 9, 10, 11, 12];
 let line3 = [13, 14, 3, 9, 15, 16];
-line1.forEach((stationNumber, index) => {
+
+// implementing doubly-linked list structure for trains
+function Line(index, numberOfPassengers) {
+  this.trainIndex = index;
+  this.numberOfPassengers = numberOfPassengers;
+  this.direction = true;
+  this.firstStation = null;
+  this.lastStation = null;
+  this.currentStation = null;
+  this.add = addStation;
+  this.moveForward = moveForward;
+  this.moveBackward = moveBackward;
+  this.showLine = showLine;
+
+  function addStation(station) {
+    if (this.firstStation === null) {
+      this.firstStation = station;
+      this.lastStation = station;
+      this.currentStation = station;
+    }
+    else {
+      this.lastStation.next = station;
+      station.prev = this.lastStation;
+      this.lastStation = station;
+    }
+  }
+
+  function moveForward() {
+    if (this.currentStation !== this.lastStation){
+      this.currentStation = this.currentStation.next;
+    }
+  }
+
+  function moveBackward() {
+    if (this.currentStation !== this.firstStation){
+      this.currentStation = this.currentStation.prev;
+    }
+  }
+
+  function showLine() {
+    let runner = this.firstStation;
+    let result = ''
+    while (runner.next !== null) {
+      result += runner.number + ' -> ';
+      runner = runner.next;
+    }
+    result += runner.number;
+    return result;
+  }
+}
+
+let train1 = new Line(1, 50);
+let train2 = new Line(2, 100);
+let train3 = new Line(3, 10);
+for (let stationNumber of line1) {
   let newStation = new Station(stationNumber, [10 + counter * 10,  100 - counter * 15]);
-  railways.addStation(newStation);
-  if (counter !== 1) {
-    railways.addConnection(railways[stationNumber], railways[line1[index-1]]);
-  }
+  train1.add(newStation);
   counter++;
-});
+};
 counter = 1;
-line2.forEach((stationNumber, index) => {
+for (let stationNumber of line2) {
   let newStation = new Station(stationNumber, [stationNumber * 10, 70]);
-  railways.addStation(newStation);
-  if (counter !== 1) {
-    railways.addConnection(railways[stationNumber], railways[line2[index-1]]);
-  }
+  train2.add(newStation);
   counter++;
-});
+};
 counter = 1;
-line3.forEach((stationNumber, index) => {
+for (let stationNumber of line3) {
   let newStation = new Station(stationNumber, [10 + counter * 10, 10 + counter * 15]);
-  railways.addStation(newStation);
-  if (counter !== 1) {
-    railways.addConnection(railways[stationNumber], railways[line3[index-1]]);
-  }
+  train3.add(newStation);
   counter++;
-});
-console.log(railways);
+};
+console.log(train1.showLine());
+console.log(train2.showLine());
+console.log(train3.showLine());
 
-// // implementing stack structure for trains
-// function Train(numberOfStations, numberOfPassengers) {
-//   this.stations = [];
-//   this.numberOfStations = numberOfStations;
-//   this.numberOfPassengers = numberOfPassengers;
-//   this.direction = true;
-//   // TODO: don't forget to change lastNode to true when adding first node
-//   this.isFirstStation = isFirstStation;
-//   this.isLastStation = isLastStation;
-//   this.add = addStation;
-//   this.pop = popStation;
-//   this.peek = peek;
+function goToNextStation(trainObject) {
+  // Check train direction
+  // If true, we should check if current Station is not the last
+  // If it is last, change direction and call the same function again
+  // If not last, move forward
+  // If direction is false, we should check if it is the first Station
+  // If it is the first station, change direction and call function
+  // If it is not first station, move backword
+  if (trainObject.direction) {
+    if (trainObject.currentStation === trainObject.lastStation) {
+      trainObject.direction = !trainObject.direction;
+      goToNextStation(trainObject);
+    }
+    else {
+      trainObject.moveForward();
+      console.log(`Train number ${trainObject.trainIndex} is now on station ${trainObject.currentStation.number}.`);
+    }
+  }
+  else {
+    if (trainObject.currentStation === trainObject.firstStation) {
+      trainObject.direction = !trainObject.direction;
+      goToNextStation(trainObject);
+    }
+    else {
+      trainObject.moveBackward();
+      console.log(`Train number ${trainObject.trainIndex} is now on station ${trainObject.currentStation.number}.`);
+    }
+  }
+}
 
-//   function addStation(station) {
-//     this.stations.push(station);
-//   }
+function moveTrains (trains) {
+  let trainsMet = trainsAreOnTheSameStation(trains);
+  if (!trainsMet.length) {
+    trains.forEach(train => {
+      goToNextStation(train);
+    });
+  }
+  else {
+    trains.forEach(train => {
+      if (trainsMet.indexOf(train) < 0) {
+        goToNextStation(train);
+      }
+    });
+    //move only first train from those that met
+    goToNextStation(trainsMet[0]);
+  }
+}
 
-//   function popStation() {
-//     this.stations.pop();
-//   }
+function trainsAreOnTheSameStation(trains) {
+  let onTheSameStation = [];
+  for (let i = 0; i < trains.length; i++) {
+    for (let j = i+1; j < trains.length; j++) {
+      if (trains[i].currentStation.number === trains[j].currentStation.number) {
+        onTheSameStation.push(trains[i]);
+        onTheSameStation.push(trains[j]);
+        console.log(`Train${i + 1} and train${j + 1} collapsed`);
+      }
+    }
+  }
+  // return array of trains sorted by number of passengers
+  return onTheSameStation.sort((train1, train2) => train2.numberOfPassengers - train1.numberOfPassengers);
+}
 
-//   function peek() {
-//     return this.stations[this.stations.length - 1];
-//   }
-
-//   function isFirstStation() {
-//     return this.stations.length === 1;
-//   }
-
-//   function isLastStation() {
-//     return this.stations.length === this.numberOfStations;
-//   }
-// }
-
-// // Station needs index number, position on canvas and direction
-// // Direction is needed to calculate position for the next Station
-// function Station(number, position, direction) {
-//   this.number = number;
-//   this.position = position;
-//   this.direction = direction;
-// }
-
-// let train1 = new Train(5, 1);
-// let train1Station1 = new Station(1, [0,0], [10, 0]);
-// train1.add(train1Station1);
-
-// function goToNextStation(trainObject) {
-//   // Check train direction - should we add or pop stations?
-//   // If true, we should check if current Station is not the last
-//   // If it is last, change direction and call the same function again
-//   // If not last, generate next Station and add it to the train
-//   // If direction is false, we should check is it is the first Station
-//   // If it is the first station, change direction and call function
-//   // If it is not first station, pop the last station from the train
-//   if (trainObject.direction) {
-//     if (trainObject.isLastStation() ) {
-//       trainObject.direction = !trainObject.direction;
-//       goToNextStation(trainObject);
-//     }
-//     else {
-//       let lastStation = trainObject.peek();
-//       let nextStationPosition = [lastStation.position[0] + lastStation.direction[0], lastStation.position[1] + lastStation.direction[1]];
-//       let nextStation = new Station( (lastStation.number+1), nextStationPosition, lastStation.direction);
-//       trainObject.add(nextStation);
-//       console.log(trainObject.peek());
-//     }
-//   }
-//   else {
-//     if (trainObject.isFirstStation()) {
-//       trainObject.direction = !trainObject.direction;
-//       goToNextStation(trainObject);
-//     }
-//     else {
-//       trainObject.pop();
-//       console.log(trainObject.peek());
-//     }
-//   }
-// }
-
-// let counter = 0;
-// function go() {
-//   console.log('Inside interval function')
-//   if (counter < 15) {
-//     counter++;
-//     goToNextStation(train1);
-//   }
-// }
-// let trainInterval = setInterval(go, 1000);
+let timer = 0;
+function go() {
+  if (timer < 15) {
+    timer++;
+    moveTrains([train1, train2, train3]);
+    console.log('-------------');
+  }
+}
+let trainInterval = setInterval(go, 1000);
