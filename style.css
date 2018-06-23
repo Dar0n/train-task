@@ -1,0 +1,35 @@
+#main {
+  width: 800px;
+  height: 650px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 1px 1px 2px 2px rgb(238, 238, 238);
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+button {
+  width: 60px;
+  height: 30px;
+  border-radius: 5px;
+  border: none;
+  margin: 5px;
+  box-shadow: 1px 1px 2px 2px rgb(199, 199, 199);
+  cursor: pointer;
+  outline: none;
+}
+
+button:hover {
+  box-shadow: 1px 1px 4px 2px rgb(117, 117, 117);
+}
+
+button:active {
+  transform: scale(1.1);
+}
