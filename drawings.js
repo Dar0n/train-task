@@ -31,6 +31,10 @@ function drawStations(ctx, trains) {
       ctx.moveTo(station.position[0], station.position[1]);
       ctx.arc(station.position[0], station.position[1], 10, 0, 2 * Math.PI);
       ctx.fill();
+      ctx.moveTo(station.position[0] + 15, station.position[1] - 10);
+      ctx.font = '18px serif';
+      ctx.fillStyle = 'black';
+      ctx.fillText(station.number, station.position[0] + 15, station.position[1] - 10);
       ctx.stroke
     }
   });
