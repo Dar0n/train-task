@@ -3,6 +3,7 @@
 function initiateMap() {
   let trains = generateLines();
   let trainInterval;
+  // Keep state of the trains movement for clearing intervals
   let trainsAreMoving = false;
   let step = 1000;
   let startButton = document.getElementById('start');
@@ -13,6 +14,23 @@ function initiateMap() {
   let ctx = canvas.getContext('2d');
   canvas.width = 550;
   canvas.height = 600;
+    
+  function runApp() {
+    moveTrains(trains);
+    draw(ctx, trains);
+  }
+
+  function initiateInterval (interval) {
+    if (!trainsAreMoving) {
+      trainInterval = setInterval(runApp, interval);
+      trainsAreMoving = true;
+    }
+  }
+
+  function cancelInterval() {
+    clearInterval(trainInterval);
+    trainsAreMoving = false;
+  }
 
   startButton.addEventListener('click', () => {
     initiateInterval(step);
@@ -42,24 +60,6 @@ function initiateMap() {
     }
   })
 
-  function initiateInterval (interval) {
-    if (!trainsAreMoving) {
-      trainInterval = setInterval(go, interval);
-      trainsAreMoving = true;
-    }
-  }
-
-  function cancelInterval() {
-    clearInterval(trainInterval);
-    trainsAreMoving = false;
-  }
-  
-  function go() {
-    if (true) {
-      moveTrains(trains);
-      draw(ctx, trains);
-    }
-  }
-  // Draw map for the first time, until the movement starts
+  // Draw map for the first time, before the movement starts
   draw(ctx, trains);
 }

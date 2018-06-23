@@ -1,7 +1,5 @@
 'use strict';
 
-
-
 function draw(ctx, trains) {
   let colors = ['green', 'red', 'blue'];
   let sizes = [15, 20, 10];
