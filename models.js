@@ -1,6 +1,6 @@
 'use strict';
 
-// implementing doubly-linked list structure for railway
+// Implementing doubly-linked list-ish structure for railway
 // Index corresponds to both line and train indices
 function Line(index, numberOfPassengers) {
   this.trainIndex = index;
@@ -16,6 +16,7 @@ function Line(index, numberOfPassengers) {
   this.showLine = showLine;
 
   function addStation(station) {
+    // When there are no stations in the line..
     if (this.firstStation === null) {
       this.firstStation = station;
       this.lastStation = station;
@@ -39,7 +40,7 @@ function Line(index, numberOfPassengers) {
       this.currentStation = this.currentStation.prev;
     }
   }
-
+// Returns array with all the station objects
   function getAllStations() {
     let result = [];
     let runner = this.firstStation;
@@ -49,7 +50,7 @@ function Line(index, numberOfPassengers) {
     }
     return result;
   }
-
+// Logs the whole railway into the console
   function showLine() {
     let runner = this.firstStation;
     let result = ''
@@ -58,11 +59,11 @@ function Line(index, numberOfPassengers) {
       runner = runner.next;
     }
     result += runner.number;
-    return result;
+    console.log(result);
   }
 }
 
-// Station needs index number, position on canvas
+// Station needs index number and position on canvas
 function Station(number, position) {
   this.number = number;
   this.position = position;

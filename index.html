@@ -5,17 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel='stylesheet' type='text/css' href='style.css'/>
   </head>
-  <script src='models.js'></script>
-  <script src='generateLines.js'></script>
-  <script src='moveTrains.js'></script>
   <body>
     <main id='main'>
       <canvas id='canvas'></canvas>
-      <div class='buttons-container'>
-        <button id='start'>Start trains</button>
-        <button id='stop'>Stop trains</button>
-      </div>
+      <aside>
+        <div class='buttons-container'>
+          <button id='start'>Start trains</button>
+          <button id='stop'>Stop trains</button>
+          <button id='faster'>Faster</button>
+          <button id='slower'>Slower</button>
+        </div>
+        <div id='logs'>
+        </div>
+    </aside>
     </main>
   </body>
-  <script src='train.js'></script>
+  <script src='models.js'></script>
+  <script src='drawings.js'></script>
+  <script src='generateLines.js'></script>
+  <script src='moveTrains.js'></script>
+  <script src='initiateMap.js'></script>
+  <script src='app.js'></script>
 </html>
